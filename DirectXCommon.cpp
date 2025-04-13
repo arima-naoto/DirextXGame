@@ -203,13 +203,17 @@ void DirectXCommon::CreateFinalRenderTargets() {
 	DXGI_SWAP_CHAIN_DESC swcDesc = {};
 	result = swapchain_->GetDesc(&swcDesc);
 
+	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+	rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+
 	backBuffers_.resize(swcDesc.BufferCount);
 	D3D12_CPU_DESCRIPTOR_HANDLE handle = rtvHeaps->GetCPUDescriptorHandleForHeapStart();
 	for (int idx = 0; idx < backBuffers_.size(); idx++) {
 		result = swapchain_->GetBuffer(idx, IID_PPV_ARGS(&backBuffers_[idx]));
 		assert(SUCCEEDED(result));
-
-		dev_->CreateRenderTargetView(backBuffers_[idx], nullptr, handle);
+		rtvDesc.Format = backBuffers_[idx]->GetDesc().Format;
+		dev_->CreateRenderTargetView(backBuffers_[idx], &rtvDesc, handle);
 		handle.ptr += dev_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	}
 }
