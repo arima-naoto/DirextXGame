@@ -13,6 +13,7 @@
 using namespace DirectX;
 
 #include "Maths.h"
+#include "ImGuiManager.h"
 
 struct Vertex {
 	Vector3 pos;
@@ -38,6 +39,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	dxCommon = DirectXCommon::GetInstance();
 	dxCommon->Initialize(win);
+
+	ImGuiManager* imguiManager = ImGuiManager::GetInstance();
+	imguiManager->Initialize(win,dxCommon);
 
 	HRESULT result = S_FALSE;
 
@@ -234,12 +238,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		static_cast<UINT>(img->rowPitch),static_cast<UINT>(img->slicePitch));
 
 	// 座標変換処理
-	auto worldMatrix = Maths::MakeRotateYMatrix(float(M_PI_4));
+	auto worldMatrix = Maths::IdentityMatrix();
 
 	// カメラのスケール、回転（ラジアン）、移動
 	Vector3 scale = { 1.0f, 1.0f, 1.0f };
 	Vector3 rotate = { 0.0f, 0.0f, 0.0f };
-	Vector3 translate = { 0.0f, 0.0f, -5.0f };
+	Vector3 translate = { 0.0f, 0.0f, 0.0f };
 
 	Matrix4x4 viewMatrix = Maths::LookAtHMatrix(scale, rotate, translate);
 
@@ -286,8 +290,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			break;
 		}
 
-		worldMatrix = Maths::MakeRotateYMatrix(rotate.y);
+		imguiManager->Begin();
+		
+	
+		worldMatrix = Maths::STRAffineMatrix(scale,translate,rotate);
 		*mapMatrix = worldMatrix * viewMatrix * projMatrix;
+
+		ImGui::DragFloat3("scale", &scale.x, 0.01f);
+		ImGui::DragFloat3("rotate", &rotate.x, 0.01f);
+		ImGui::DragFloat3("translate", &translate.x, 0.01f);
+
+		imguiManager->End();
 
 		dxCommon->BeginDraw();
 
@@ -306,9 +319,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		cmdList->DrawIndexedInstanced(6, 1, 0, 0, 0);
 
+		imguiManager->Draw();
+
 		dxCommon->EndDraw();
 	}
 
+	imguiManager->Finalize();
 	win->TerminateGameWindow();
 	return 0;
 }
