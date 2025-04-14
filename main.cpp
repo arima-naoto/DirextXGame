@@ -13,7 +13,6 @@
 using namespace DirectX;
 
 #include "Maths.h"
-#include "ImGuiManager.h"
 
 struct Vertex {
 	Vector3 pos;
@@ -39,9 +38,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	dxCommon = DirectXCommon::GetInstance();
 	dxCommon->Initialize(win);
-
-	ImGuiManager* imguiManager = ImGuiManager::GetInstance();
-	imguiManager->Initialize(win,dxCommon);
 
 	HRESULT result = S_FALSE;
 
@@ -290,12 +286,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			break;
 		}
 
-		imguiManager->Begin();
-
 		worldMatrix = Maths::MakeRotateYMatrix(rotate.y);
 		*mapMatrix = worldMatrix * viewMatrix * projMatrix;
-
-		imguiManager->End();
 
 		dxCommon->BeginDraw();
 
@@ -314,12 +306,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		cmdList->DrawIndexedInstanced(6, 1, 0, 0, 0);
 
-		imguiManager->Draw();
-
 		dxCommon->EndDraw();
 	}
 
-	imguiManager->Finalize();
 	win->TerminateGameWindow();
 	return 0;
 }
