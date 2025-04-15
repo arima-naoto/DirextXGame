@@ -237,13 +237,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	result = texbuff->WriteToSubresource(0,nullptr,img->pixels,
 		static_cast<UINT>(img->rowPitch),static_cast<UINT>(img->slicePitch));
 
-	// 座標変換処理
-	auto worldMatrix = Maths::IdentityMatrix();
-
-	// カメラのスケール、回転（ラジアン）、移動
+	
 	Vector3 scale = { 1.0f, 1.0f, 1.0f };
 	Vector3 rotate = { 0.0f, 0.0f, 0.0f };
-	Vector3 translate = { 0.0f, 0.0f, 0.0f };
+	Vector3 translate = { 0.0f, 0.0f, -5.0f };
 
 	Matrix4x4 viewMatrix = Maths::LookAtHMatrix(scale, rotate, translate);
 
@@ -258,7 +255,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	Matrix4x4* mapMatrix;
 	result = constBuff->Map(0, nullptr, (void**)&mapMatrix);
-	*mapMatrix = worldMatrix * viewMatrix * projMatrix;
+	*mapMatrix = viewMatrix * projMatrix;
 
 	ID3D12DescriptorHeap* basicDescHeap = nullptr;
 	D3D12_DESCRIPTOR_HEAP_DESC descHeapDesc = {};
@@ -292,14 +289,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		imguiManager->Begin();
 		
-	
-		worldMatrix = Maths::STRAffineMatrix(scale,translate,rotate);
+		Matrix4x4 worldMatrix = Maths::MakeRotateMatrix(rotate);
 		*mapMatrix = worldMatrix * viewMatrix * projMatrix;
 
-		ImGui::DragFloat3("scale", &scale.x, 0.01f);
 		ImGui::DragFloat3("rotate", &rotate.x, 0.01f);
-		ImGui::DragFloat3("translate", &translate.x, 0.01f);
-
+		
 		imguiManager->End();
 
 		dxCommon->BeginDraw();
