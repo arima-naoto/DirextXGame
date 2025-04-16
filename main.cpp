@@ -13,6 +13,7 @@
 using namespace DirectX;
 
 #include "Maths.h"
+#include "Input.h"
 #include "ImGuiManager.h"
 
 struct Vertex {
@@ -33,6 +34,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	WinApp* win = nullptr;
 	DirectXCommon* dxCommon = nullptr;
+	Input* input = nullptr;
 
 	win = WinApp::GetInstance();
 	win->CreateGameWindow();
@@ -40,8 +42,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	dxCommon = DirectXCommon::GetInstance();
 	dxCommon->Initialize(win);
 
+	input = Input::GetInstance();
+	input->Initialize();
+
 	ImGuiManager* imguiManager = ImGuiManager::GetInstance();
-	imguiManager->Initialize(win,dxCommon);
+	imguiManager->Initialize(win, dxCommon);
 
 	HRESULT result = S_FALSE;
 
@@ -288,6 +293,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		}
 
 		imguiManager->Begin();
+
+		input->Updata();
 		
 		Matrix4x4 worldMatrix = Maths::MakeRotateMatrix(rotate);
 		*mapMatrix = worldMatrix * viewMatrix * projMatrix;
