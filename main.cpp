@@ -298,8 +298,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		
 		Matrix4x4 worldMatrix = Maths::MakeRotateMatrix(rotate);
 		*mapMatrix = worldMatrix * viewMatrix * projMatrix;
-
-		ImGui::DragFloat3("rotate", &rotate.x, 0.01f);
 		
 		imguiManager->End();
 
