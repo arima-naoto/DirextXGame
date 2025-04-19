@@ -37,6 +37,12 @@
     <Filter Include="ヘッダー ファイル\gameSystem">
       <UniqueIdentifier>{5fa19588-2a35-4049-8de3-ced18ff8799c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\model">
+      <UniqueIdentifier>{6a65d872-d0b0-44a7-ac6c-d82da0810766}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\model">
+      <UniqueIdentifier>{64a8ccc6-d9ea-48f6-8690-473c3d086756}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

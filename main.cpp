@@ -15,6 +15,7 @@ using namespace DirectX;
 #include "Maths.h"
 #include "Input.h"
 #include "ImGuiManager.h"
+#include "model/PMDModel.h"
 
 struct Vertex {
 	Vector3 pos;
@@ -47,6 +48,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	ImGuiManager* imguiManager = ImGuiManager::GetInstance();
 	imguiManager->Initialize(win, dxCommon);
+
+	PMDModel* ruka = PMDModel::GetInstance();
+	ruka->LoadFromPMD("Resources/巡音ルカ.pmd");
 
 	HRESULT result = S_FALSE;
 
