@@ -287,8 +287,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		imguiManager->Begin();
 
 		input->Updata();
-		
-		local.rotate.y += 0.025f;
+
 		Matrix4x4 worldMatrix = Maths::AffineMatrix(local);
 		Matrix4x4 cameraMatrix = Maths::AffineMatrix(camera);
 		Matrix4x4 viewMatrix = Maths::Inverse(cameraMatrix);
@@ -298,7 +297,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		*mapMatrix = WVPMatrix;
 
 		ImGui::DragFloat3("rotate", &camera.rotate.x, 0.01f);
-		ImGui::DragFloat3("translate", &camera.translate.x, 0.01f);
+		ImGui::DragFloat3("translate", &local.translate.x, 0.01f);
 
 		imguiManager->End();
 

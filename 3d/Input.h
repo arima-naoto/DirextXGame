@@ -2,13 +2,25 @@
 #define DURECTINPUT_VERSION 0x0800;
 #include "dinput.h"
 #include "Xinput.h"
+#include "wrl.h"
+#include <cstdint>
 
 #pragma comment(lib,"dinput8.lib")
 #pragma comment(lib,"dxguid.lib")
 
 #pragma comment(lib,"xinput.lib")
 
+using namespace Microsoft::WRL;
+
 class Input {
+public:
+
+	struct MouseMove {
+		LONG lX;
+		LONG lY;
+		LONG lZ;
+	};
+
 public:
 
 	/// <summary>
@@ -41,6 +53,12 @@ public:
 	/// <returns></returns>
 	bool PushKey(BYTE keycode);
 
+	bool IsPressMouse(int32_t mouseNumber);
+
+	bool IsTriggerMouse(int32_t mouseNumber);
+
+	MouseMove GetMouseMove();
+
 private:
 
 	Input() = default;
@@ -54,12 +72,17 @@ private:
 
 	void SetExclusiveControlLevel();
 
+	
+
 private:
 
-	IDirectInput8* directInput = nullptr;
-	IDirectInputDevice8* keyborad = nullptr;
+	ComPtr<IDirectInput8> directInput = nullptr;
+	ComPtr<IDirectInputDevice8> keyborad = nullptr;
+	ComPtr<IDirectInputDevice8> devMouse = nullptr;
 
 	BYTE key[256] = {};
 	BYTE prevKey[256] = {};
+	DIMOUSESTATE2 mouse;
+	DIMOUSESTATE2 mousePre;
 
 };

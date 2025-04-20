@@ -25,6 +25,11 @@ void Input::Updata()
     memcpy(prevKey, key, sizeof(key));
     // 全キーの入力状態を取得
     keyborad->GetDeviceState(sizeof(key), key);
+
+    devMouse->Acquire();
+    mousePre = mouse;
+    devMouse->GetDeviceState(sizeof(mouse), &mouse);
+
 }
 
 bool Input::TriggerKey(BYTE keycode)
@@ -35,6 +40,33 @@ bool Input::TriggerKey(BYTE keycode)
 bool Input::PushKey(BYTE keycode)
 {
     return (key[keycode] & 0x80);
+}
+
+bool Input::IsPressMouse(int32_t mouseNumber)
+{
+    if (mouse.rgbButtons[mouseNumber]) {
+        return true;
+    }
+
+    return false;
+}
+
+bool Input::IsTriggerMouse(int32_t mouseNumber)
+{
+
+    if (!mousePre.rgbButtons[mouseNumber] && mouse.rgbButtons[mouseNumber]) {
+        return true;
+    }
+
+    return false;
+}
+
+Input::MouseMove Input::GetMouseMove()
+{
+    MouseMove tmp;
+    tmp.lX = mouse.lX;
+    tmp.lY = mouse.lY;
+    tmp.lZ = mouse.lZ;
 }
 
 void Input::CreateDirectInputObj()
@@ -48,6 +80,10 @@ void Input::CreateDirectInputObj()
 
     result = directInput->CreateDevice(GUID_SysKeyboard, &keyborad, NULL);
     assert(SUCCEEDED(result));
+
+    result = directInput->CreateDevice(GUID_SysMouse, &devMouse,NULL);
+    assert(SUCCEEDED(result));
+
 }
 
 void Input::SetInputData()
@@ -55,6 +91,9 @@ void Input::SetInputData()
     HRESULT result = S_FALSE;
 
     result = keyborad->SetDataFormat(&c_dfDIKeyboard);
+    assert(SUCCEEDED(result));
+
+    result = devMouse->SetDataFormat(&c_dfDIMouse2); // 標準形式
     assert(SUCCEEDED(result));
 }
 
@@ -65,6 +104,9 @@ void Input::SetExclusiveControlLevel()
 
     result = keyborad->SetCooperativeLevel(
         win->GetHwnd(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
+    assert(SUCCEEDED(result));
 
+    result = devMouse->SetCooperativeLevel(
+        win->GetHwnd(), DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
     assert(SUCCEEDED(result));
 }
