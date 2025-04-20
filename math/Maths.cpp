@@ -189,20 +189,20 @@ Matrix4x4 Maths::MakeTranslateMatrix(const Vector3& translate)
 	};
 }
 
-Matrix4x4 Maths::AffineMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate)
+Matrix4x4 Maths::AffineMatrix(const WorldTransform& affine)
 {
-	Matrix4x4 scaleMatrix = MakeScaleMatrix(scale);
-	Matrix4x4 rotateMatrix = MakeRotateMatrix(rotate);
-	Matrix4x4 translateMatrix = MakeTranslateMatrix(translate);
+	Matrix4x4 scaleMatrix = MakeScaleMatrix(affine.scale);
+	Matrix4x4 rotateMatrix = MakeRotateMatrix(affine.rotate);
+	Matrix4x4 translateMatrix = MakeTranslateMatrix(affine.translate);
 
 	Matrix4x4 affineMatrix = scaleMatrix * rotateMatrix * translateMatrix;
 	return affineMatrix;
 }
 
-Matrix4x4 Maths::STRAffineMatrix(const Vector3& scale, const Vector3& translate, const Vector3& rotate) {
-	Matrix4x4 scaleMatrix = MakeScaleMatrix(scale);
-	Matrix4x4 rotateMatrix = MakeRotateMatrix(rotate);
-	Matrix4x4 translateMatrix = MakeTranslateMatrix(translate);
+Matrix4x4 Maths::STRAffineMatrix(const WorldTransform& affine) {
+	Matrix4x4 scaleMatrix = MakeScaleMatrix(affine.scale);
+	Matrix4x4 rotateMatrix = MakeRotateMatrix(affine.rotate);
+	Matrix4x4 translateMatrix = MakeTranslateMatrix(affine.translate);
 
 	Matrix4x4 affineMatrix = scaleMatrix * translateMatrix * rotateMatrix;
 	return affineMatrix;
@@ -289,15 +289,6 @@ Matrix4x4 Maths::Inverse(const Matrix4x4& m)
 #pragma endregion 
 
 	return result;
-}
-
-Matrix4x4 Maths::LookAtHMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate)
-{
-	Matrix4x4 worldMatrix = AffineMatrix(scale, rotate, translate);
-
-	Matrix4x4 viewMatrix = Inverse(worldMatrix);
-
-	return viewMatrix;
 }
 
 Matrix4x4 Maths::MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip)

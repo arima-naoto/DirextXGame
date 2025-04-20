@@ -51,15 +51,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	HRESULT result = S_FALSE;
 
 	Vertex vertices[] = {
-		{{-0.4f,-0.7f,0.0f }, {0.0f,1.0f}}, // 左下
-		{{-0.4f, 0.7f,0.0f }, {0.0f,0.0f}}, // 左上
-		{{ 0.4f,-0.7f,0.0f }, {1.0f,1.0f}}, // 右下
-		{{ 0.4f, 0.7f,0.0f }, {1.0f,0.0f}}  // 左上
+	
+	    {{-0.4f,-0.7f, 0.0f }, {0.0f,1.0f}},
+	    {{-0.4f, 0.7f, 0.0f }, {0.0f,0.0f}},
+	    {{ 0.4f,-0.7f, 0.0f }, {1.0f,1.0f}},
+	    {{ 0.4f, 0.7f, 0.0f }, {1.0f,0.0f}},
 	};
 
 	unsigned short indices[] = {
-		0,1,2,
-		2,1,3
+		0,1,2,  
+	    2,1,3,
 	};
 
 	ID3D12Device* dev = dxCommon->GetDevice();
@@ -241,26 +242,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	result = texbuff->WriteToSubresource(0,nullptr,img->pixels,
 		static_cast<UINT>(img->rowPitch),static_cast<UINT>(img->slicePitch));
-
 	
-	Vector3 scale = { 1.0f, 1.0f, 1.0f };
-	Vector3 rotate = { 0.0f, 0.0f, 0.0f };
-	Vector3 translate = { 0.0f, 0.0f, -5.0f };
-
-	Matrix4x4 viewMatrix = Maths::LookAtHMatrix(scale, rotate, translate);
-
-	Matrix4x4 projMatrix = Maths::MakePerspectiveFovMatrix(float(M_PI_2),
-		WinApp::window_width / WinApp::window_height, 0.1f, 100.0f);
-
-
 	ID3D12Resource* constBuff = nullptr;
 	heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	resdesc = CD3DX12_RESOURCE_DESC::Buffer((sizeof(Matrix4x4) + 0xff) & ~0xff);
 	dev->CreateCommittedResource(&heapProp, D3D12_HEAP_FLAG_NONE,&resdesc,D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&constBuff));
 
-	Matrix4x4* mapMatrix;
+	Matrix4x4* mapMatrix = nullptr;
 	result = constBuff->Map(0, nullptr, (void**)&mapMatrix);
-	*mapMatrix = viewMatrix * projMatrix;
+	*mapMatrix = Maths::IdentityMatrix();
+
+	WorldTransform local = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f},{0.0f,0.0f,0.0f} };
+	WorldTransform camera = { {1.0f,1.0f,1.0f},{0.0f,0.0f,0.0f,},{0.0f,0.0f,-5.0f} };
 
 	ID3D12DescriptorHeap* basicDescHeap = nullptr;
 	D3D12_DESCRIPTOR_HEAP_DESC descHeapDesc = {};
@@ -296,9 +289,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		input->Updata();
 		
-		Matrix4x4 worldMatrix = Maths::MakeRotateMatrix(rotate);
-		*mapMatrix = worldMatrix * viewMatrix * projMatrix;
-		
+		local.rotate.y += 0.05f;
+		Matrix4x4 worldMatrix = Maths::AffineMatrix(local);
+		Matrix4x4 cameraMatrix = Maths::AffineMatrix(camera);
+		Matrix4x4 viewMatrix = Maths::Inverse(cameraMatrix);
+		Matrix4x4 projMatrix = Maths::MakePerspectiveFovMatrix(float(M_PI_2),
+			WinApp::window_width / WinApp::window_height, 0.1f, 100.0f);
+		Matrix4x4 WVPMatrix = worldMatrix * viewMatrix * projMatrix;
+		*mapMatrix = WVPMatrix;
+
+		ImGui::DragFloat3("rotate", &camera.rotate.x, 0.01f);
+		ImGui::DragFloat3("translate", &camera.translate.x, 0.01f);
+
 		imguiManager->End();
 
 		dxCommon->BeginDraw();

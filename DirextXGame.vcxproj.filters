@@ -131,6 +131,9 @@
     <ClInclude Include="3d\Input.h">
       <Filter>ヘッダー ファイル\gameSystem</Filter>
     </ClInclude>
+    <ClInclude Include="math\structure.h">
+      <Filter>ヘッダー ファイル\math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shader\SpriteVS.hlsl">

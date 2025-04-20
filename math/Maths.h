@@ -6,6 +6,7 @@
 #include <math.h>
 #include "cassert"
 #include "Arithmetic.h"
+#include "structure.h"
 
 class Maths
 {
@@ -43,13 +44,11 @@ public:
 
 	static Matrix4x4 MakeTranslateMatrix(const Vector3& translate);
 
-	static Matrix4x4 AffineMatrix(const Vector3&scale,const Vector3 &rotate,const Vector3 &translate);
+	static Matrix4x4 AffineMatrix(const WorldTransform &affine);
 
-	static Matrix4x4 STRAffineMatrix(const Vector3& scale, const Vector3& translate, const Vector3& rotate);
+	static Matrix4x4 STRAffineMatrix(const WorldTransform& affine);
 
 	static Matrix4x4 Inverse(const Matrix4x4& m);
-
-	static Matrix4x4 LookAtHMatrix(const Vector3& scale, const Vector3& rotate, const Vector3& translate);
 
 	static Matrix4x4 MakePerspectiveFovMatrix(float fovY,float aspectRatio,float nearClip,float farClip);
 

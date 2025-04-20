@@ -161,6 +161,7 @@
     <ClInclude Include="math\Arithmetic.h" />
     <ClInclude Include="math\Maths.h" />
     <ClInclude Include="math\Matrix4x4.h" />
+    <ClInclude Include="math\structure.h" />
     <ClInclude Include="math\Vector2.h" />
     <ClInclude Include="math\Vector3.h" />
   </ItemGroup>
