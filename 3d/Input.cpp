@@ -67,6 +67,7 @@ Input::MouseMove Input::GetMouseMove()
     tmp.lX = mouse.lX;
     tmp.lY = mouse.lY;
     tmp.lZ = mouse.lZ;
+    return tmp;
 }
 
 void Input::CreateDirectInputObj()
