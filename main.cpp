@@ -59,8 +59,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	};
 
 	unsigned short indices[] = {
-		0,1,2,  
-	    2,1,3,
+		0,1,2,2,1,3,
 	};
 
 	ID3D12Device* dev = dxCommon->GetDevice();
@@ -289,7 +288,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		input->Updata();
 		
-		local.rotate.y += 0.05f;
+		local.rotate.y += 0.025f;
 		Matrix4x4 worldMatrix = Maths::AffineMatrix(local);
 		Matrix4x4 cameraMatrix = Maths::AffineMatrix(camera);
 		Matrix4x4 viewMatrix = Maths::Inverse(cameraMatrix);
