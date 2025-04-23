@@ -5,6 +5,8 @@
 #include "wrl.h"
 #include <cstdint>
 
+#include "Vector2.h"
+
 #pragma comment(lib,"dinput8.lib")
 #pragma comment(lib,"dxguid.lib")
 
@@ -58,6 +60,11 @@ public:
 	bool IsTriggerMouse(int32_t mouseNumber);
 
 	MouseMove GetMouseMove();
+
+	int32_t GetWheel();
+
+	const Vector2Int GetMousePosition() const;
+	
 
 private:
 

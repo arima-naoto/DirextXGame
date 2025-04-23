@@ -1,6 +1,9 @@
-﻿#include "Input.h"
+﻿#define NOMINMAX
+#include "Input.h"
 #include "WinApp.h"
 #include "cassert"
+
+#include "algorithm"
 
 Input* Input::GetInstance()
 {
@@ -68,6 +71,24 @@ Input::MouseMove Input::GetMouseMove()
     tmp.lY = mouse.lY;
     tmp.lZ = mouse.lZ;
     return tmp;
+}
+
+int32_t Input::GetWheel()
+{
+    int32_t result = mouse.lZ;
+    return result;
+}
+
+const Vector2Int Input::GetMousePosition() const
+{
+    POINT mousePosition;
+    // マウス座標(スクリーン座標)を取得する
+    GetCursorPos(&mousePosition);
+
+    // クライアントエリア座標に変換する
+    HWND hwnd = WinApp::GetInstance()->GetHwnd();
+    ScreenToClient(hwnd, &mousePosition);
+    return Vector2Int{mousePosition.x, mousePosition.y};
 }
 
 void Input::CreateDirectInputObj()

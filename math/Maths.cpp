@@ -1,9 +1,17 @@
 ﻿#include "Maths.h"
-#include "Arithmetic.h"
+
 
 float Maths::Cot(float x)
 {
 	return 1.0f / tanf(x);;
+}
+
+Vector2 Maths::Subtract(const Vector2& v1, const Vector2& v2)
+{
+	Vector2 result;
+	result.x = v1.x - v2.x;
+	result.y = v1.y - v2.y;
+	return result;
 }
 
 Vector3 Maths::Add(const Vector3& v1, const Vector3& v2)

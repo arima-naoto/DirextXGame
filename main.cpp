@@ -1,4 +1,5 @@
-﻿#include "WinApp.h"
+﻿#define NOMINMAX
+#include "WinApp.h"
 #include "DirectXCommon.h"
 
 #include "Vector2.h"
@@ -16,6 +17,8 @@ using namespace DirectX;
 #include "Input.h"
 #include "ImGuiManager.h"
 
+#include "algorithm"
+
 struct Vertex {
 	Vector3 pos;
 	Vector2 uv;
@@ -27,6 +30,27 @@ struct TexRGBA {
 
 size_t AlignmentedSize(size_t size, size_t alignment) {
 	return size + alignment - size % alignment;
+}
+
+void CameraRotate(WorldTransform& camera) {
+	static Vector2 prevMouse = { 0, 0 };
+	static Vector2 mouse = { 0, 0 };
+
+	Input* input = Input::GetInstance();
+
+	// Inputクラスからマウス位置を取得（Vector2Int -> Vector2に変換）
+	Vector2Int mousePosInt = input->GetMousePosition();
+	mouse = { static_cast<float>(mousePosInt.x), static_cast<float>(mousePosInt.y) };
+
+	int mouseClickLeft = 1;
+
+	if (input->IsPressMouse(mouseClickLeft)) {
+		Vector2 delta = mouse - prevMouse;
+		camera.rotate.x += delta.y * 0.0025f;
+		camera.rotate.y += delta.x * 0.0025f;
+	}
+
+	prevMouse = mouse;
 }
 
 // Windowアプリのエントリーポイント(main関数)
@@ -136,7 +160,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	gpipeline.SampleMask = D3D12_DEFAULT_SAMPLE_MASK;
 	gpipeline.RasterizerState.MultisampleEnable = false;
-	gpipeline.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
+	gpipeline.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
 	gpipeline.RasterizerState.FillMode = D3D12_FILL_MODE_SOLID;
 	gpipeline.RasterizerState.DepthClipEnable = true;
 
@@ -289,14 +313,29 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		input->Updata();
 
 		Matrix4x4 worldMatrix = Maths::AffineMatrix(local);
-		Matrix4x4 cameraMatrix = Maths::AffineMatrix(camera);
+		Matrix4x4 cameraMatrix = Maths::STRAffineMatrix(camera);
 		Matrix4x4 viewMatrix = Maths::Inverse(cameraMatrix);
 		Matrix4x4 projMatrix = Maths::MakePerspectiveFovMatrix(float(M_PI_2),
 			WinApp::window_width / WinApp::window_height, 0.1f, 100.0f);
 		Matrix4x4 WVPMatrix = worldMatrix * viewMatrix * projMatrix;
 		*mapMatrix = WVPMatrix;
 
+		//int32_t wheelScroll = input->GetWheel();
+		////スクロール量の最小値と最大値
+		//float scroll[2] = { 0.5f,5.0f };
+
+		//if (wheelScroll != 0) {
+		//	camera.scale.z -= (wheelScroll / (1024.f * 2));
+		//    camera.scale.z = std::min(std::max(camera.scale.z, scroll[0]), scroll[1]);;
+		//}
+
+		//CameraRotate(camera);
+	
+		ImGui::Begin("world");
 		ImGui::DragFloat3("rotate", &camera.rotate.x, 0.01f);
+		ImGui::End();
+
+
 		ImGui::DragFloat3("translate", &local.translate.x, 0.01f);
 
 		imguiManager->End();
