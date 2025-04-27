@@ -360,6 +360,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		imguiManager->Draw();
 
 		dxCommon->EndDraw();
+
+		if (input->TriggerKey(DIK_ESCAPE)) {
+			return -1;
+		}
 	}
 
 	imguiManager->Finalize();
