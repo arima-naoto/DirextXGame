@@ -18,6 +18,7 @@ using namespace DirectX;
 #include "ImGuiManager.h"
 
 #include "algorithm"
+#include"Model.h"
 
 struct Vertex {
 	Vector3 pos;
@@ -42,7 +43,7 @@ void CameraRotate(WorldTransform& camera) {
 	Vector2Int mousePosInt = input->GetMousePosition();
 	mouse = { static_cast<float>(mousePosInt.x), static_cast<float>(mousePosInt.y) };
 
-	int mouseClickLeft = 1;
+	int mouseClickLeft = 0;
 
 	if (input->IsPressMouse(mouseClickLeft)) {
 		Vector2 delta = mouse - prevMouse;
@@ -68,6 +69,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	input = Input::GetInstance();
 	input->Initialize();
+
+	Model model;
+	model.LoadFromOBJ("Resources/sphere.obj");
+	model.CreateBuffers(dxCommon->GetDevice());
 
 	ImGuiManager* imguiManager = ImGuiManager::GetInstance();
 	imguiManager->Initialize(win, dxCommon);
@@ -320,16 +325,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Matrix4x4 WVPMatrix = worldMatrix * viewMatrix * projMatrix;
 		*mapMatrix = WVPMatrix;
 
-		//int32_t wheelScroll = input->GetWheel();
-		////スクロール量の最小値と最大値
-		//float scroll[2] = { 0.5f,5.0f };
+		int32_t wheelScroll = input->GetWheel();
+		//スクロール量の最小値と最大値
+		float scroll[2] = { 0.5f,5.0f };
 
-		//if (wheelScroll != 0) {
-		//	camera.scale.z -= (wheelScroll / (1024.f * 2));
-		//    camera.scale.z = std::min(std::max(camera.scale.z, scroll[0]), scroll[1]);;
-		//}
+		if (wheelScroll != 0) {
+			camera.scale.z -= (wheelScroll / (1024.f * 2));
+		    camera.scale.z = std::min(std::max(camera.scale.z, scroll[0]), scroll[1]);;
+		}
 
-		//CameraRotate(camera);
+		CameraRotate(camera);
 	
 		ImGui::Begin("world");
 		ImGui::DragFloat3("rotate", &camera.rotate.x, 0.01f);
@@ -353,7 +358,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		cmdList->SetGraphicsRootSignature(rootSignature);
 		cmdList->SetDescriptorHeaps(1, &basicDescHeap);
 		cmdList->SetGraphicsRootDescriptorTable(0, basicDescHeap->GetGPUDescriptorHandleForHeapStart());
-	
 
 		cmdList->DrawIndexedInstanced(6, 1, 0, 0, 0);
 

@@ -144,6 +144,8 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="math\Arithmetic.cpp" />
     <ClCompile Include="math\Maths.cpp" />
+    <ClCompile Include="Model.cpp" />
+    <ClCompile Include="ObjLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3d\Input.h" />
@@ -164,6 +166,8 @@
     <ClInclude Include="math\structure.h" />
     <ClInclude Include="math\Vector2.h" />
     <ClInclude Include="math\Vector3.h" />
+    <ClInclude Include="Model.h" />
+    <ClInclude Include="ObjLoader.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shader\ShapePS.hlsl">
