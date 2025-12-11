@@ -352,14 +352,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		cmdList->SetPipelineState(pipelinestate);
 		cmdList->SetGraphicsRootSignature(rootSignature);
 
-		cmdList->IASetVertexBuffers(0, 1, &vbView);
-		cmdList->IASetIndexBuffer(&ibView);
+		//cmdList->IASetVertexBuffers(0, 1, &vbView);
+		//cmdList->IASetIndexBuffer(&ibView);
 
 		cmdList->SetGraphicsRootSignature(rootSignature);
 		cmdList->SetDescriptorHeaps(1, &basicDescHeap);
 		cmdList->SetGraphicsRootDescriptorTable(0, basicDescHeap->GetGPUDescriptorHandleForHeapStart());
 
-		cmdList->DrawIndexedInstanced(6, 1, 0, 0, 0);
+		//cmdList->DrawIndexedInstanced(6, 1, 0, 0, 0);
+
+		model.Draw(cmdList);
 
 		imguiManager->Draw();
 
