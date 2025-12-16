@@ -37,6 +37,12 @@
     <Filter Include="ヘッダー ファイル\gameSystem">
       <UniqueIdentifier>{5fa19588-2a35-4049-8de3-ced18ff8799c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\model">
+      <UniqueIdentifier>{a42f18a8-2b07-439b-83e9-aba1414a6f8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\model">
+      <UniqueIdentifier>{32cffc5d-30a8-4d12-87be-a91525dbe3fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -69,20 +75,29 @@
     <ClCompile Include="base\WinApp.cpp">
       <Filter>ソース ファイル\base</Filter>
     </ClCompile>
-    <ClCompile Include="math\Maths.cpp">
-      <Filter>ソース ファイル\math</Filter>
-    </ClCompile>
     <ClCompile Include="math\Arithmetic.cpp">
       <Filter>ソース ファイル\math</Filter>
     </ClCompile>
     <ClCompile Include="3d\Input.cpp">
       <Filter>ソース ファイル\gameSystem</Filter>
     </ClCompile>
-    <ClCompile Include="ObjLoader.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="math\Conversion.cpp">
+      <Filter>ソース ファイル\math</Filter>
     </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="model\MeshData.cpp">
+      <Filter>ソース ファイル\model</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Maths.cpp">
+      <Filter>ソース ファイル\math</Filter>
+    </ClCompile>
+    <ClCompile Include="model\Mesh.cpp">
+      <Filter>ソース ファイル\model</Filter>
+    </ClCompile>
+    <ClCompile Include="model\Model.cpp">
+      <Filter>ソース ファイル\model</Filter>
+    </ClCompile>
+    <ClCompile Include="model\Renderer.cpp">
+      <Filter>ソース ファイル\model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -140,11 +155,20 @@
     <ClInclude Include="math\structure.h">
       <Filter>ヘッダー ファイル\math</Filter>
     </ClInclude>
-    <ClInclude Include="ObjLoader.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="math\Conversion.h">
+      <Filter>ヘッダー ファイル\math</Filter>
     </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="model\MeshData.h">
+      <Filter>ヘッダー ファイル\model</Filter>
+    </ClInclude>
+    <ClInclude Include="model\Mesh.h">
+      <Filter>ヘッダー ファイル\model</Filter>
+    </ClInclude>
+    <ClInclude Include="model\Model.h">
+      <Filter>ヘッダー ファイル\model</Filter>
+    </ClInclude>
+    <ClInclude Include="model\Renderer.h">
+      <Filter>ヘッダー ファイル\model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -160,6 +184,12 @@
     <FxCompile Include="Shader\ShapePS.hlsl">
       <Filter>シェーダー ファイル</Filter>
     </FxCompile>
+    <FxCompile Include="shader\ModelPS.hlsl">
+      <Filter>シェーダー ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="shader\ModelVS.hlsl">
+      <Filter>シェーダー ファイル</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\Shape.hlsli">
@@ -168,5 +198,6 @@
     <None Include="Shader\Sprite.hlsli">
       <Filter>シェーダー ファイル</Filter>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

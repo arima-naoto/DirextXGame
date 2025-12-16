@@ -6,3 +6,4 @@ struct WorldTransform {
 	Vector3 rotate;
 	Vector3 translate;
 };
+
