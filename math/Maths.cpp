@@ -299,6 +299,25 @@ Matrix4x4 Maths::Inverse(const Matrix4x4& m)
 	return result;
 }
 
+/// <summary>
+/// 転置行列
+/// </summary>
+/// <param name="m">行列</param>
+/// <returns></returns>
+Matrix4x4 Maths::Transpose(const Matrix4x4& m)
+{
+	Matrix4x4 result = {};
+
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			result.m[i][j] = m.m[j][i];
+		}
+	}
+
+	return result;
+
+}
+
 Matrix4x4 Maths::MakePerspectiveFovMatrix(float fovY, float aspectRatio, float nearClip, float farClip)
 {
 	return {
@@ -307,6 +326,20 @@ Matrix4x4 Maths::MakePerspectiveFovMatrix(float fovY, float aspectRatio, float n
 		0.0f,0.0f,farClip / (farClip - nearClip),1.0f,
 		0.0f,0.0f,-(nearClip * farClip) / (farClip - nearClip),0.0f
 	};
+}
+
+Matrix4x4 Maths::MakePerspectiveFovLH(float fovY, float aspect, float nearZ, float farZ)
+{
+	Matrix4x4 m{};
+	float f = 1.0f / tanf(fovY * 0.5f);
+
+	m.m[0][0] = f / aspect;
+	m.m[1][1] = f;
+	m.m[2][2] = farZ / (farZ - nearZ);
+	m.m[2][3] = 1.0f;
+	m.m[3][2] = (-nearZ * farZ) / (farZ - nearZ);
+
+	return m;
 }
 
 Matrix4x4 Maths::ViewportMatrix(float left, float top, float width, float height, float minDepth, float maxDepth)

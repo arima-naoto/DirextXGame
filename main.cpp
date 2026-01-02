@@ -12,13 +12,8 @@ using namespace DirectX;
 #include "Input.h"
 #include "ImGuiManager.h"
 
-#include "Renderer.h"
+#include "ModelGraphics.h"
 #include "Model.h"
-#include "Conversion.h"
-
-size_t AlignmentedSize(size_t size, size_t alignment) {
-	return size + alignment - size % alignment;
-}
 
 // Windowアプリのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -27,28 +22,23 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	DirectXCommon* dxCommon = nullptr;
 	Input* input = nullptr;
 
-	Renderer renderer;
-	Model model;
-
 	win = WinApp::GetInstance();
 	win->CreateGameWindow();
 
 	dxCommon = DirectXCommon::GetInstance();
 	dxCommon->Initialize(win);
 
-	renderer.Initialize(dxCommon->GetDevice());
-	model.Load("Resources/Box.obj");
-
 	input = Input::GetInstance();
 	input->Initialize();
 	
+	ModelGraphics graphics;
+	graphics.Initialize(dxCommon->GetDevice());
+
+	Model model;
+	model.Load("Resources/Box.obj");
+
 	ImGuiManager* imguiManager = ImGuiManager::GetInstance();
 	imguiManager->Initialize(win, dxCommon);
-
-	Conversion conversion;
-
-	conversion.Initialize();
-	conversion.CreateConstBuffer();
 
 	while (true) {
 		if (win->ProcessMessage()) {
@@ -59,15 +49,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		input->Updata();
 
-		conversion.Transform();
+		model.Updata();
 
 		imguiManager->End();
+
 
 		dxCommon->BeginDraw();
 
 		ID3D12GraphicsCommandList* cmdList = dxCommon->GetCommandList();
 
-		renderer.PreDraw(cmdList);
+		graphics.PreDraw(cmdList);
 
 		model.Draw();
 

@@ -10,7 +10,7 @@ struct Vertex {
 class MeshData{
 public:
 
-	void LoadObj(const char* failPath);
+	void LoadObj(const char* filePath);
 
 	std::vector<Vertex> vertices_;
 	std::vector<uint32_t> indices_;

@@ -39,23 +39,28 @@ private:
 	void CreateSwapChain();
 	void CreateFinalRenderTargets();
 	void EnableDebugLayer();
+	void CreateDepthBuffer();
 	void CreateFence();
 
-
+	void SetRenderTargets(bool sRGB);
+	void ClearRenderTarget();
+	void ClearDepthBuffer();
 
 private:
 
 	WinApp* win_ = nullptr;
 
-	ComPtr<ID3D12Device> dev_ = nullptr;
-	ComPtr<IDXGIFactory6> dxgiFactory_ = nullptr;
-	ComPtr<ID3D12CommandAllocator> cmdAllocator_ = nullptr;
-	ComPtr<ID3D12GraphicsCommandList> cmdList_ = nullptr;
-	ComPtr<ID3D12CommandQueue> cmdQueue_ = nullptr;
-	ComPtr<IDXGISwapChain4> swapchain_ = nullptr;
-	ComPtr<ID3D12DescriptorHeap> rtvHeaps = nullptr;
+	ComPtr<ID3D12Device> dev_;
+	ComPtr<IDXGIFactory6> dxgiFactory_;
+	ComPtr<ID3D12CommandAllocator> cmdAllocator_;
+	ComPtr<ID3D12GraphicsCommandList> cmdList_;
+	ComPtr<ID3D12CommandQueue> cmdQueue_;
+	ComPtr<IDXGISwapChain4> swapchain_;
+	ComPtr<ID3D12DescriptorHeap> rtvHeaps_;
+	ComPtr<ID3D12DescriptorHeap> dsvHeap_;
 	std::vector<ID3D12Resource*> backBuffers_;
-	ComPtr<ID3D12Fence> fence = nullptr;
+	ComPtr<ID3D12Resource> depthBuffer_;
+	ComPtr<ID3D12Fence> fence;
 
 	int32_t backBufferWidth_ = 0;
 	int32_t backBufferHeight_ = 0;

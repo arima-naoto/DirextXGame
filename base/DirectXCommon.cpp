@@ -1,9 +1,9 @@
 ﻿#include "DirectXCommon.h"
 #include "cassert"
-
-
 #pragma comment(lib,"d3d12.lib")
 #pragma comment(lib,"dxgi.lib")
+
+const uint32_t kLinearRTVStart = 2;
 
 // シングルトン
 DirectXCommon* DirectXCommon::GetInstance()
@@ -27,6 +27,7 @@ void DirectXCommon::Initialize(WinApp* win, int32_t backBufferWidth, int32_t bac
 	InitializeCommand();
 	CreateSwapChain();
 	CreateFinalRenderTargets();
+	CreateDepthBuffer();
 	CreateFence();
 }
 
@@ -37,14 +38,12 @@ void DirectXCommon::BeginDraw() {
 	auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(backBuffers_[bbIdx],
 		D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 	cmdList_->ResourceBarrier(1, &barrier);
+	
+	SetRenderTargets(true);
 
+	ClearRenderTarget();
 
-	auto rtvH = rtvHeaps->GetCPUDescriptorHandleForHeapStart();
-	rtvH.ptr += bbIdx * dev_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-	cmdList_->OMSetRenderTargets(1, &rtvH, true, nullptr);
-
-	float clearColor[] = { 0.274f, 0.509f, 0.705f, 1.0f };
-	cmdList_->ClearRenderTargetView(rtvH, clearColor, 0, nullptr);
+	ClearDepthBuffer();
 
 	// ビューポートの設定
 	CD3DX12_VIEWPORT viewport =
@@ -197,24 +196,30 @@ void DirectXCommon::CreateFinalRenderTargets() {
 	heapDesc.NumDescriptors = 2;
 	heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 
-	result = dev_->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&rtvHeaps));
+	result = dev_->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&rtvHeaps_));
 	assert(SUCCEEDED(result));
 
 	DXGI_SWAP_CHAIN_DESC swcDesc = {};
 	result = swapchain_->GetDesc(&swcDesc);
 
+	// ★ SRGBで固定
 	D3D12_RENDER_TARGET_VIEW_DESC rtvDesc = {};
 	rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 	rtvDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
 
 	backBuffers_.resize(swcDesc.BufferCount);
-	D3D12_CPU_DESCRIPTOR_HANDLE handle = rtvHeaps->GetCPUDescriptorHandleForHeapStart();
+	D3D12_CPU_DESCRIPTOR_HANDLE handle = rtvHeaps_->GetCPUDescriptorHandleForHeapStart();
+
 	for (int idx = 0; idx < backBuffers_.size(); idx++) {
+
 		result = swapchain_->GetBuffer(idx, IID_PPV_ARGS(&backBuffers_[idx]));
 		assert(SUCCEEDED(result));
-		rtvDesc.Format = backBuffers_[idx]->GetDesc().Format;
+
+		// ✅ ここでSRGBのままRTV作成
 		dev_->CreateRenderTargetView(backBuffers_[idx], &rtvDesc, handle);
-		handle.ptr += dev_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+
+		handle.ptr += dev_->GetDescriptorHandleIncrementSize(
+			D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	}
 }
 
@@ -227,6 +232,33 @@ void DirectXCommon::EnableDebugLayer() {
 
 }
 
+void DirectXCommon::CreateDepthBuffer()
+{
+	HRESULT result = S_FALSE;
+
+	CD3DX12_HEAP_PROPERTIES heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+
+	CD3DX12_RESOURCE_DESC depthResDesc = CD3DX12_RESOURCE_DESC::Tex2D(
+		DXGI_FORMAT_D32_FLOAT, backBufferWidth_, backBufferHeight_, 1, 0, 1, 0,
+		D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
+
+	CD3DX12_CLEAR_VALUE clearValue = CD3DX12_CLEAR_VALUE(DXGI_FORMAT_D32_FLOAT, 1.0f, 0);
+
+	result = dev_->CreateCommittedResource(&heapProp, D3D12_HEAP_FLAG_NONE, &depthResDesc,
+		D3D12_RESOURCE_STATE_DEPTH_WRITE, &clearValue, IID_PPV_ARGS(&depthBuffer_));
+
+	D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc{};
+	dsvHeapDesc.NumDescriptors = 1;
+	dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+	result = dev_->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&dsvHeap_));
+
+	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+	dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+	dev_->CreateDepthStencilView(
+		depthBuffer_.Get(), &dsvDesc, dsvHeap_->GetCPUDescriptorHandleForHeapStart());
+}
+
 void DirectXCommon::CreateFence()
 {
 	HRESULT result = S_FALSE;
@@ -234,6 +266,38 @@ void DirectXCommon::CreateFence()
 	result = dev_->CreateFence(fenceVal, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
 	assert(SUCCEEDED(result));
 
+}
+
+void DirectXCommon::SetRenderTargets(bool sRGB)
+{
+	auto bbIndex = swapchain_->GetCurrentBackBufferIndex();
+	auto rtvIndex = sRGB ? bbIndex : bbIndex + kLinearRTVStart;
+
+	auto rtvH = CD3DX12_CPU_DESCRIPTOR_HANDLE(
+		rtvHeaps_->GetCPUDescriptorHandleForHeapStart(), rtvIndex,
+		dev_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV));
+
+	auto dsvH = CD3DX12_CPU_DESCRIPTOR_HANDLE(dsvHeap_->GetCPUDescriptorHandleForHeapStart());
+
+	cmdList_->OMSetRenderTargets(1, &rtvH, false, &dsvH);
+}
+
+void DirectXCommon::ClearRenderTarget(){
+
+	auto bbIndex = swapchain_->GetCurrentBackBufferIndex();
+	auto rtvH = CD3DX12_CPU_DESCRIPTOR_HANDLE(
+		rtvHeaps_->GetCPUDescriptorHandleForHeapStart(), bbIndex,
+		dev_->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV));
+	
+	float clearColor[] = { 0.1f, 0.25f, 0.5f, 0.0f };
+	cmdList_->ClearRenderTargetView(rtvH, clearColor, 0, nullptr);
+}
+
+void DirectXCommon::ClearDepthBuffer(){
+
+	auto dsvH = CD3DX12_CPU_DESCRIPTOR_HANDLE(dsvHeap_->GetCPUDescriptorHandleForHeapStart());
+
+	cmdList_->ClearDepthStencilView(dsvH, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 }
 
 size_t DirectXCommon::GetBackBufferCount() { return backBuffers_.size(); }

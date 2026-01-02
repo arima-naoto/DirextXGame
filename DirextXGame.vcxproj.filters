@@ -43,6 +43,12 @@
     <Filter Include="ヘッダー ファイル\model">
       <UniqueIdentifier>{32cffc5d-30a8-4d12-87be-a91525dbe3fe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\3d">
+      <UniqueIdentifier>{e9edb562-8177-4ff1-bbb6-0e625e4bbcde}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\3d">
+      <UniqueIdentifier>{be4c8d4f-f164-4463-8c0b-610ae0083fda}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -96,8 +102,11 @@
     <ClCompile Include="model\Model.cpp">
       <Filter>ソース ファイル\model</Filter>
     </ClCompile>
-    <ClCompile Include="model\Renderer.cpp">
+    <ClCompile Include="model\ModelGraphics.cpp">
       <Filter>ソース ファイル\model</Filter>
+    </ClCompile>
+    <ClCompile Include="3d\WorldTransform.cpp">
+      <Filter>ソース ファイル\3d</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -167,8 +176,11 @@
     <ClInclude Include="model\Model.h">
       <Filter>ヘッダー ファイル\model</Filter>
     </ClInclude>
-    <ClInclude Include="model\Renderer.h">
+    <ClInclude Include="model\ModelGraphics.h">
       <Filter>ヘッダー ファイル\model</Filter>
+    </ClInclude>
+    <ClInclude Include="3d\WorldTransform.h">
+      <Filter>ヘッダー ファイル\3d</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "DirectXCommon.h"
 
-class Renderer {
+class ModelGraphics {
 public:
 	void Initialize(ID3D12Device* device);
 	void PreDraw(ID3D12GraphicsCommandList* cmdList);

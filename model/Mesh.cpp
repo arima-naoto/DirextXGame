@@ -2,6 +2,7 @@
 
 void Mesh::Create(ID3D12Device* device, const MeshData& data)
 {
+	bool use32Bit = data.vertices_.size() > 65535;
 	indexCount_ = (uint32_t)data.indices_.size();
 
 	// VertexBuffer

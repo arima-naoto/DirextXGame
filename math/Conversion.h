@@ -5,6 +5,11 @@
 
 #include "DirectXCommon.h"
 
+struct CbTransform {
+	Matrix4x4 World;
+	Matrix4x4 WVP;
+};
+
 /// <summary>
 /// 座標変換用クラス
 /// </summary>
@@ -22,6 +27,8 @@ public:
 
 	void ZoomCamera();
 
+	void DrawDebugText();
+
 	ID3D12Resource* GetConstBuffer() { return constBuffer; }
 
 
@@ -33,9 +40,11 @@ private:
 
 	DirectXCommon* dxCommon_ = nullptr;
 
-	Matrix4x4* mapMatrix_ = nullptr;
+	CbTransform* mapMatrix_ = nullptr;
 
 	ID3D12Resource* constBuffer = nullptr;
 
 };
+
+
 

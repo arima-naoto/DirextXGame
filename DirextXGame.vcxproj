@@ -138,6 +138,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="3d\Input.cpp" />
+    <ClCompile Include="3d\WorldTransform.cpp" />
     <ClCompile Include="base\DirectXCommon.cpp" />
     <ClCompile Include="base\WinApp.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
@@ -154,10 +155,11 @@
     <ClCompile Include="model\Mesh.cpp" />
     <ClCompile Include="model\MeshData.cpp" />
     <ClCompile Include="model\Model.cpp" />
-    <ClCompile Include="model\Renderer.cpp" />
+    <ClCompile Include="model\ModelGraphics.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3d\Input.h" />
+    <ClInclude Include="3d\WorldTransform.h" />
     <ClInclude Include="base\DirectXCommon.h" />
     <ClInclude Include="base\WinApp.h" />
     <ClInclude Include="imgui\imconfig.h" />
@@ -179,7 +181,7 @@
     <ClInclude Include="model\Mesh.h" />
     <ClInclude Include="model\MeshData.h" />
     <ClInclude Include="model\Model.h" />
-    <ClInclude Include="model\Renderer.h" />
+    <ClInclude Include="model\ModelGraphics.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shader\ModelPS.hlsl">

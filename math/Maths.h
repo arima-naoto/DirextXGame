@@ -53,7 +53,11 @@ public:
 
 	static Matrix4x4 Inverse(const Matrix4x4& m);
 
+	static Matrix4x4 Transpose(const Matrix4x4& m);
+
 	static Matrix4x4 MakePerspectiveFovMatrix(float fovY,float aspectRatio,float nearClip,float farClip);
+
+	static Matrix4x4 MakePerspectiveFovLH(float fovY, float aspect, float nearZ, float farZ);
 
 	static Matrix4x4 ViewportMatrix(float left, float top, float width,float height,float minDepth,float maxDepth);
 
